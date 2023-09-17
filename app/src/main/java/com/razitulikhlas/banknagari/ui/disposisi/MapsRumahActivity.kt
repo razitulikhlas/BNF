@@ -35,6 +35,7 @@ import com.razitulikhlas.banknagari.ui.mapping.getAddress
 import com.razitulikhlas.banknagari.ui.permohonan.OfficerViewModel
 import com.razitulikhlas.banknagari.utils.AppConstant
 import com.razitulikhlas.banknagari.utils.AppPermission
+import com.razitulikhlas.banknagari.utils.Utils
 import com.razitulikhlas.core.data.source.remote.network.ApiResponse
 import com.razitulikhlas.core.data.source.remote.response.DataImage
 import com.razitulikhlas.core.util.maps.DefaultLocationClient
@@ -66,6 +67,7 @@ class MapsRumahActivity : AppCompatActivity() , OnMapReadyCallback {
     var address : String? = null
 
     var images = ArrayList<String>()
+    private lateinit var utils : Utils
 
     private val viewModel : OfficerViewModel by viewModel()
 
@@ -82,6 +84,9 @@ class MapsRumahActivity : AppCompatActivity() , OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsRumahBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        utils = Utils()
+        utils.initDialog(this)
+
 
         clearImage()
         imageClick()
@@ -98,6 +103,7 @@ class MapsRumahActivity : AppCompatActivity() , OnMapReadyCallback {
         }.build()
         if(permission.isLocationOk(this)){
             Log.e("TAG", "onCreate: request Permission ok")
+            utils.showDialog()
             checkGPS()
         }else if(permission.showPermissionRequestPermissionRationale(this)){
             Log.e("TAG", "onCreate: request Permission ok1")
@@ -171,7 +177,10 @@ class MapsRumahActivity : AppCompatActivity() , OnMapReadyCallback {
             addOnSuccessListener {
                 locationClient
                     .getLocationUpdates(100000L)
-                    .catch { e -> e.printStackTrace() }
+                    .catch {
+                            e -> e.printStackTrace()
+                            utils.hideDialog()
+                    }
                     .onEach { location ->
                         serviceScope.launch(Dispatchers.Main) {
                             latitude = location.latitude
@@ -201,6 +210,7 @@ class MapsRumahActivity : AppCompatActivity() , OnMapReadyCallback {
                                     binding.tvLocations.text = address
                                 }
                             }
+                            utils.hideDialog()
                         }
                     }
                     .launchIn(serviceScope)

@@ -5,3 +5,4 @@ sealed class ApiResponse<out R> {
     data class Error(val errorMessage: String) : ApiResponse<Nothing>()
     object Empty : ApiResponse<Nothing>()
 }
+

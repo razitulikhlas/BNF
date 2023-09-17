@@ -6,13 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.razitulikhlas.banknagari.databinding.ItemSubSkimBinding
 import com.razitulikhlas.core.data.source.remote.response.DataItemSkim
 import com.razitulikhlas.core.util.formatRupiah
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 
-class DataSkimAdapter : RecyclerView.Adapter<DataSkimAdapter.ViewHolder>() {
+class ProcessAdapter  : RecyclerView.Adapter<ProcessAdapter.ViewHolder>(){
 
     private var listData = ArrayList<DataItemSkim>()
-    private lateinit var dataCallback: DataSkimCallback
+    private lateinit var dataCallback: DataSkimAdapter.DataSkimCallback
 
     fun setData(listData: List<DataItemSkim>) {
         this.listData.clear()
@@ -21,7 +19,7 @@ class DataSkimAdapter : RecyclerView.Adapter<DataSkimAdapter.ViewHolder>() {
         }
     }
 
-    fun setListener(dataCallback: DataSkimCallback){
+    fun setListener(dataCallback: DataSkimAdapter.DataSkimCallback){
         this.dataCallback = dataCallback
     }
 
@@ -39,20 +37,20 @@ class DataSkimAdapter : RecyclerView.Adapter<DataSkimAdapter.ViewHolder>() {
     override fun getItemCount(): Int = listData.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = listData[position]
-            with(holder.bin){
-                root.setOnClickListener {
-                    dataCallback.onClick(item)
-                }
-                tvSkim.text = item.skimKredit
-                tvDebitur.text = item.pemohon
-                tvPlafond.text= formatRupiah(item.plafond!!.toDouble())
-                tvTimeLoan.text= "${item.jangkaWaktu} bulan"
+        val item = listData[position]
+        with(holder.bin){
+            root.setOnClickListener {
+                dataCallback.onClick(item)
             }
+            tvSkim.text = item.skimKredit
+            tvDebitur.text = item.pemohon
+            tvPlafond.text= formatRupiah(item.plafond!!.toDouble())
+            tvTimeLoan.text= "${item.jangkaWaktu} bulan"
+        }
     }
 
 
     interface DataSkimCallback {
-        fun onClick(item:DataItemSkim)
+        fun onClick(item: DataItemSkim)
     }
 }

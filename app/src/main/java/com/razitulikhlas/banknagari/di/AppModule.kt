@@ -29,6 +29,7 @@ val adapterModule = module {
     single { MappingCustomerAdapter() }
     single { DashboardSkimAdapter() }
     single { DataSkimAdapter() }
+    single { ProcessAdapter() }
 
 }
 

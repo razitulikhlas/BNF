@@ -34,7 +34,6 @@ class HomeDisposisiActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.search.setOnClickListener {
-            Log.e("TAG", "onCreate: klik", )
             startActivity(Intent(this,SearchDisposisiActivity::class.java))
         }
 
@@ -53,15 +52,15 @@ class HomeDisposisiActivity : AppCompatActivity() {
 
         mediator?.attach()
 
-        lifecycleScope.launch {
-            var info = Constant.NIK_CHECK
-            if(LEVEL_CHECK < 2){
-                if(intent!!.getStringExtra("skim") != null){
-                    info =intent!!.getStringExtra("skim")!!
-                }
-            }
-            viewModel.getDataSkim(info,LEVEL_CHECK)
-        }
+//        lifecycleScope.launch {
+//            var info = Constant.NIK_CHECK
+//            if(LEVEL_CHECK < 2){
+//                if(intent!!.getStringExtra("skim") != null){
+//                    info =intent!!.getStringExtra("skim")!!
+//                }
+//            }
+////            viewModel.getDataSkim(info,LEVEL_CHECK)
+//        }
 
         binding.viewPager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {

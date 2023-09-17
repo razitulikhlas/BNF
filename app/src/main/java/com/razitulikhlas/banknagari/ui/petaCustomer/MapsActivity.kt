@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -34,12 +36,15 @@ import com.razitulikhlas.banknagari.adapter.MappingCustomerAdapter
 import com.razitulikhlas.banknagari.databinding.ActivityMapsBinding
 import com.razitulikhlas.banknagari.ui.disposisi.DetailDisposisiActivity
 import com.razitulikhlas.banknagari.ui.permohonan.OfficerViewModel
+import com.razitulikhlas.banknagari.utils.AppPermission
+import com.razitulikhlas.banknagari.utils.Utils
 import com.razitulikhlas.core.data.source.remote.network.ApiResponse
 import com.razitulikhlas.core.data.source.remote.response.DataItemPetaBusiness
 import com.razitulikhlas.core.data.source.remote.response.DataItemSkim
 import com.razitulikhlas.core.util.dummy.DataMapCustomer
 import com.razitulikhlas.core.util.maps.DefaultLocationClient
 import com.razitulikhlas.core.util.maps.LocationsClient
+import com.razitulikhlas.core.util.showToastLong
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -70,6 +75,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
     private val viewModel : MapsViewModel by viewModel()
 //    var data = DataMapCustomer.dataDummy()
     private var data = ArrayList<DataItemPetaBusiness>()
+    private lateinit var pDialog: SweetAlertDialog
+    private lateinit var utils : Utils
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +85,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
         setContentView(binding.root)
         supportActionBar?.hide()
         supportActionBar?.elevation = 0f
+
+        utils = Utils()
+        utils.initDialog(this)
+        utils.showDialog()
 
         permission()
 
@@ -98,12 +109,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
                             data.addAll(it.data.data!!)
                             mapAdapter.setData(data)
                         }
+                        utils.hideDialog()
+
                     }
                     is ApiResponse.Error->{
+                        Log.e("TAG", "onCreate: ${it.errorMessage}" )
+                        showToastLong(this@MapsActivity,"silahkan periksa jaringan internet anda")
+                        utils.hideDialog()
 
                     }
                     is ApiResponse.Empty->{
-
+                        utils.hideDialog()
                     }
                 }
             }
@@ -194,6 +210,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
 //        }.build()
 
     }
+
+
 
     fun RecyclerView?.getCurrentPosition() : Int {
         return (this?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()

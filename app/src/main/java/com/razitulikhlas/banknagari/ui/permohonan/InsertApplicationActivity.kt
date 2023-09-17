@@ -12,6 +12,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.razitulikhlas.banknagari.R
 import com.razitulikhlas.banknagari.databinding.ActivityInsertApplicationBinding
 import com.razitulikhlas.banknagari.ui.disposisi.HomeDisposisiActivity
+import com.razitulikhlas.banknagari.utils.Utils
 import com.razitulikhlas.core.data.source.remote.network.ApiResponse
 import com.razitulikhlas.core.data.source.remote.response.DataItemSkim
 import com.razitulikhlas.core.util.Constant.NIK_CHECK
@@ -23,16 +24,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class InsertApplicationActivity : AppCompatActivity() {
     lateinit var binding : ActivityInsertApplicationBinding
     private val viewModel : OfficerViewModel by viewModel()
-    private lateinit var pDialog: SweetAlertDialog
+    private lateinit var utils : Utils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInsertApplicationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
-        pDialog.progressHelper.barColor = Color.parseColor("#A5DC86")
-        pDialog.titleText = "Loading"
-        pDialog.setCancelable(false)
+        utils = Utils()
+        utils.initDialog(this)
 //        binding.toolbar.title = "Data Permohonan"
 //        setSupportActionBar(binding.toolbar)
 //        supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -49,6 +48,7 @@ class InsertApplicationActivity : AppCompatActivity() {
            edSkim.setAdapter(adapter)
            edPlatfond.addTextChangedListener(RupiahFormat(edPlatfond))
             btnSave.setOnClickListener {
+                utils.showDialog()
                 saveData()
             }
             ivBack.setOnClickListener {
@@ -108,7 +108,7 @@ class InsertApplicationActivity : AppCompatActivity() {
                        }
                    }
                     delay(1000)
-                    pDialog.dismiss()
+                    utils.hideDialog()
                 }
 
             }

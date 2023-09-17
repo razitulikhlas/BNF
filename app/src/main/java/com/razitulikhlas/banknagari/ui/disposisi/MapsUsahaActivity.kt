@@ -36,6 +36,7 @@ import com.razitulikhlas.banknagari.ui.mapping.getAddress
 import com.razitulikhlas.banknagari.ui.permohonan.OfficerViewModel
 import com.razitulikhlas.banknagari.utils.AppConstant
 import com.razitulikhlas.banknagari.utils.AppPermission
+import com.razitulikhlas.banknagari.utils.Utils
 import com.razitulikhlas.core.data.source.remote.network.ApiResponse
 import com.razitulikhlas.core.data.source.remote.response.DataImage
 import com.razitulikhlas.core.util.maps.DefaultLocationClient
@@ -68,6 +69,8 @@ class MapsUsahaActivity : AppCompatActivity(), OnMapReadyCallback {
 
     var images = ArrayList<String>()
 
+    private lateinit var utils : Utils
+
     private val viewModel : OfficerViewModel by viewModel()
 
     var images1 : Uri? = null
@@ -90,6 +93,8 @@ class MapsUsahaActivity : AppCompatActivity(), OnMapReadyCallback {
         delImage()
 
         permission = AppPermission()
+        utils = Utils()
+        utils.initDialog(this)
         locationClient = DefaultLocationClient(
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
@@ -100,6 +105,7 @@ class MapsUsahaActivity : AppCompatActivity(), OnMapReadyCallback {
         }.build()
         if(permission.isLocationOk(this)){
             e("TAG", "onCreate: request Permission ok")
+            utils.showDialog()
             checkGPS()
         }else if(permission.showPermissionRequestPermissionRationale(this)){
             e("TAG", "onCreate: request Permission ok1")
@@ -187,7 +193,10 @@ class MapsUsahaActivity : AppCompatActivity(), OnMapReadyCallback {
             addOnSuccessListener {
                 locationClient
                     .getLocationUpdates(100000L)
-                    .catch { e -> e.printStackTrace() }
+                    .catch {
+                            e -> e.printStackTrace()
+                            utils.hideDialog()
+                    }
                     .onEach { location ->
                         serviceScope.launch(Dispatchers.Main) {
                             latitude = location.latitude
@@ -217,6 +226,7 @@ class MapsUsahaActivity : AppCompatActivity(), OnMapReadyCallback {
                                     binding.tvLocations.text = address
                                 }
                             }
+                            utils.hideDialog()
                         }
                     }
                     .launchIn(serviceScope)
